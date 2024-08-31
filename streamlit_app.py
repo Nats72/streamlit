@@ -10,9 +10,6 @@ import google.ai.generativelanguage as glm
 # # APIキーの設定
 # genai.configure(api_key=os.getenv("GoogleAPIKEY"))
 
-# # Geminiモデルの設定
-# model = genai.GenerativeModel('gemini-1.5-flash')
-
 # ================================================================================
 # ページ設定
 # https://docs.streamlit.io/develop/api-reference/configuration/st.set_page_config
