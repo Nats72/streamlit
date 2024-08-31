@@ -39,8 +39,8 @@ def main():
     if "message_history" not in st.session_state:
         st.session_state.message_history = [
             # system promptを設定
-            {"role","system"},
-            {"content","日本語で回答してください。"}
+            # {"role","system"},
+            # {"content","日本語で回答してください。"}
             ]
     
     # チャット履歴を表示
