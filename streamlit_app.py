@@ -15,7 +15,13 @@ import google.ai.generativelanguage as glm
 # https://docs.streamlit.io/develop/api-reference/configuration/st.set_page_config
 # ================================================================================
 # ページ設定
-st.set_page_config(page_title="Gemini Chatbot", page_icon=":whale:", layout="centered",initial_sidebar_state="auto",menu_items=None)
+st.set_page_config(
+    page_title="Gemini Chatbot",
+    page_icon=":whale:",
+    layout="centered",
+    initial_sidebar_state="auto",
+    menu_items=None
+    )
 
 # ================================================================================
 # Body
@@ -38,6 +44,7 @@ for message in st.session_state.chat_history:
         st.markdown(message["content"])
      
 # ユーザーの入力が送信された際に実行される処理
+# chat_input()は、チャットUIでユーザの入力を待ち受けする
 if prompt := st.chat_input("ここにメッセージを入力してください。"):
  
     # APIキーのチェック
@@ -65,7 +72,8 @@ if prompt := st.chat_input("ここにメッセージを入力してください�
         )
  
     # Geminiへ問い合わせを行う
-    response = model.generate_content(messages)
+    with st.spinner("Gemini is typing..."):
+        response = model.generate_content(messages)
  
     # Geminiの返答をチャット履歴に追加し画面表示
     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
