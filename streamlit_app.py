@@ -18,7 +18,7 @@ import google.ai.generativelanguage as glm
 # https://docs.streamlit.io/develop/api-reference/configuration/st.set_page_config
 # ================================================================================
 # ページ設定
-st.set_page_config(page_title="Gemini Chatbot", page_icon=":whale:", layout="centered",initial_sidebar_state="auto",menu_items="None")
+st.set_page_config(page_title="Gemini Chatbot", page_icon=":whale:", layout="centered",initial_sidebar_state="auto",menu_items=None)
 
 # タイトル生成
 st.title("Geminiでチャットボット作ってみた")
