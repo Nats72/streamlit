@@ -37,10 +37,16 @@ def main():
     
     # セッションにチャット履歴がなければ初期化（message_historyを作成）
     if "message_history" not in st.session_state:
+        system_prompt = (
+            "Your purpose is to answer questions about specific documents only. "
+            "Please answer the user's questions based on what you know about the document. "
+            "If the question is outside scope of the document, please politely decline. "
+            "If you don't know the answer, say `I don't know`. "
+        )
         st.session_state.message_history = [
             # system promptを設定
-            # {"role","system"},
-            # {"content","日本語で回答してください。"}
+            {"role": "system", "content": system_prompt},
+            {"role": "assistant", "content": "何か気になることはありますか？"}
             ]
     
     # チャット履歴を表示
