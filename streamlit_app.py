@@ -27,7 +27,7 @@ def init_messages():
     st.sidebar.title("Options")
     # サイドバーにGeminiのAPIキーの入力欄を設ける
     gemini_api_key = st.sidebar.text_input("Gemini API Key", key="chatbot_api_key", type="password")
-    "[Get an Gemini API key](https://aistudio.google.com/app/apikey)"
+    st.sidebar.text("[Get an Gemini API key](https://aistudio.google.com/app/apikey)")
 
     # メッセージ履歴を消すボタンを設置
     clear_button = st.sidebar.button("Clear Conversaton",key="clear")
