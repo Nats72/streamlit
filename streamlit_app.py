@@ -74,7 +74,7 @@ def init_chain():
     # ユーザーの入力をモデルに渡すためのテンプレートを定義
     prompt = ChatPromptTemplate.from_messages([
         *st.session_state.message_history,
-        ("user", "{user_input}"),
+        ("user", "{user_input}")
     ])
     # モデルからの返答から必要な情報を抽出
     output_parser = StrOutputParser()
