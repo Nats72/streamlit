@@ -25,10 +25,10 @@ def init_page():
     
     # Sidebar Settings
     st.sidebar.title("Options")
-    # サイドバーにGeminiのAPIキーの入力欄を設ける
-    with st.sidebar:
-        gemini_api_key = st.text_input("Gemini API Key", key="chatbot_api_key", type="password")
-        "[Get an Gemini API key](https://aistudio.google.com/app/apikey)"
+    # # サイドバーにGeminiのAPIキーの入力欄を設ける
+    # with st.sidebar:
+    #     gemini_api_key = st.text_input("Gemini API Key", key="chatbot_api_key", type="password")
+    #     "[Get an Gemini API key](https://aistudio.google.com/app/apikey)"
     
 def init_messages():
     # メッセージ履歴を消すボタンを設置
@@ -112,6 +112,7 @@ def main():
     if user_input := st.chat_input("ここにメッセージを入力してください。"):
     
         # APIキーのチェック
+        gemini_api_key = os.getenv("GOOGLE_API_KEY")
         if not gemini_api_key:
             # APIキーがない場合はエラー
             st.info("Please add your [Gemini API key](https://aistudio.google.com/app/apikey) to continue.")
