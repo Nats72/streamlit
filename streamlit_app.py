@@ -4,12 +4,14 @@ import streamlit as st
 import google.generativeai as genai
 import google.ai.generativelanguage as glm
 
+# Global variable
+gemini_api_key = ""
 
 def init_page():
     # # APIキーの設定
     # genai.configure(api_key=os.getenv("GoogleAPIKEY"))
 
-    # ページ設定
+    # Page Settings
     st.set_page_config(
         page_title="Gemini Chatbot",
         page_icon=":whale:",
@@ -18,7 +20,7 @@ def init_page():
         menu_items=None
         )
     
-    # サイドバーの設定
+    # Sidebar Settings
     st.sidebar.title("option")
     # サイドバーにGeminiのAPIキーの入力欄を設ける
     with st.sidebar:
