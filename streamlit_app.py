@@ -5,14 +5,13 @@ import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import ConfigurableField
 
 import google.generativeai as genai
 
 
 def init_page():
-    # APIキーの設定
-    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+    # # APIキーの設定
+    # genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
     # Page Settings
     st.set_page_config(
@@ -25,16 +24,18 @@ def init_page():
     
     # Sidebar Settings
     st.sidebar.title("Options")
-    # # サイドバーにGeminiのAPIキーの入力欄を設ける
-    # with st.sidebar:
-    #     gemini_api_key = st.text_input("Gemini API Key", key="chatbot_api_key", type="password")
-    #     "[Get an Gemini API key](https://aistudio.google.com/app/apikey)"
-    
+    # サイドバーにGeminiのAPIキーの入力欄を設ける
+    gemini_api_key = st.sidebar.text_input("Gemini API Key", key="chatbot_api_key", type="password")
+    "[Get an Gemini API key](https://aistudio.google.com/app/apikey)"
+    if gemini_api_key:
+        genai.configure(api_key=gemini_api_key)
+
 def init_messages():
     # メッセージ履歴を消すボタンを設置
     clear_button = st.sidebar.button("Clear Conversaton",key="clear")
     # クリアボタンを押すか、メッセージが存在しない場合に初期化する処理
-    if clear_button or "message_history" not in st.session_state:
+    # if clear_button or "message_history" not in st.session_state:
+    if clear_button:
         # システムプロンプト（初期プロンプト）を定義
         system_prompt = (
             "日本語で回答してください。"
@@ -95,66 +96,9 @@ def main():
     # chat_input()で、チャットUIでユーザの入力を待ち受けする
     if user_input := st.chat_input("ここにメッセージを入力してください。"):
     
-        # # APIキーのチェック
-        # gemini_api_key = os.getenv("GOOGLE_API_KEY")
-        # if not gemini_api_key:
-        #     # APIキーがない場合はエラー
-        #     st.info("Please add your [Gemini API key](https://aistudio.google.com/app/apikey) to continue.")
-        #     st.stop()
-    
-        # # モデルの設定
-        # generation_config = {
-        #     "temperature": 0.9,  # 生成するテキストのランダム性を制御
-        #     "top_p": 1,          # 生成に使用するトークンの累積確率を制御
-        #     "top_k": 1,          # 生成に使用するトップkトークンを制御
-        #     "max_output_tokens": 2048,  # 最大出力トークン数を指定
-        # }
-        # # セーフティ設定
-        # safety_settings = [
-        #     {
-        #         "category": "HARM_CATEGORY_HARASSMENT",  # ハラスメントに関する内容を制御
-        #         "threshold": "BLOCK_MEDIUM_AND_ABOVE"     # 中程度以上のハラスメントをブロック
-        #     },
-        #     {
-        #         "category": "HARM_CATEGORY_HATE_SPEECH",  # ヘイトスピーチに関する内容を制御
-        #         "threshold": "BLOCK_MEDIUM_AND_ABOVE"      # 中程度以上のヘイトスピーチをブロック
-        #     },
-        #     {
-        #         "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",  # 性的に露骨な内容を制御
-        #         "threshold": "BLOCK_MEDIUM_AND_ABOVE"            # 中程度以上の性的内容をブロック
-        #     },
-        #     {
-        #         "category": "HARM_CATEGORY_DANGEROUS_CONTENT",  # 危険な内容を制御
-        #         "threshold": "BLOCK_MEDIUM_AND_ABOVE"            # 中程度以上の危険な内容をブロック
-        #     }
-        # ]
-        # # モデルの初期化
-        # genai.configure(api_key=gemini_api_key)
-        # model = genai.GenerativeModel(
-        #     model_name='gemini-1.5-flash',
-        #     generation_config=generation_config,
-        #     safety_settings=safety_settings
-        #     )
-    
         # ユーザの入力をチャット履歴に追加し画面表示
-        # st.session_state.message_history.append({"role": "user", "content": user_input})
         st.chat_message("user").markdown(user_input)
 
-        # これまでの会話履歴を取得
-        # messages = []
-        # for message in st.session_state.message_history:
-        #     messages.append(
-        #         {
-        #             "role": message["role"] if message["role"] == "user" else "model",
-        #             'parts': message["content"]
-        #         }
-        #     )
-        
-    
-        # Geminiへ問い合わせを行う
-        # with st.spinner("Gemini is typing..."):
-        #     response = model.generate_content(messages)
-        
         # LLMの返答をStream表示させる
         with st.chat_message('ai'):
             # LCELのstreaming関数(chain.stream)をstreamlitのst.write_streamで表示させている
@@ -163,10 +107,6 @@ def main():
         # チャット履歴に追加する
         st.session_state.message_history.append({"role": "user", "content": user_input})
         st.session_state.message_history.append({"role": "ai", "content": response})
-
-        # Geminiの返答をチャット履歴に追加し画面表示
-        # st.session_state.message_history.append({"role": "assistant", "content": response.text})
-        # st.chat_message("assistant").write(response.text)
 
 if __name__ == '__main__':
     main()
