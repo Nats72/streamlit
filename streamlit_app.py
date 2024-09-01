@@ -59,15 +59,10 @@ def select_model():
     if model == "Gemini":
         st.session_state.model_name = "gemini-1.5-flash"
         # モデル生成
-        configurable_model = ChatGoogleGenerativeAI(
+        return ChatGoogleGenerativeAI(
             temperature=temperature,
             model=st.session_state.model_name
         )
-        # configurable_model.configurable_fields(
-        #     model_name=ConfigurableField(id="model"),
-        #     default_key="gemini-1.5-flash"
-        # )
-        return configurable_model
     
 def init_chain():
     st.session_state.llm = select_model()
