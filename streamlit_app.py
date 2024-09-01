@@ -21,21 +21,23 @@ def init_page():
         initial_sidebar_state="auto",
         menu_items=None
         )
-    
+
+def init_messages():
     # Sidebar Settings
     st.sidebar.title("Options")
     # サイドバーにGeminiのAPIキーの入力欄を設ける
     gemini_api_key = st.sidebar.text_input("Gemini API Key", key="chatbot_api_key", type="password")
     "[Get an Gemini API key](https://aistudio.google.com/app/apikey)"
-    if gemini_api_key:
-        genai.configure(api_key=gemini_api_key)
 
-def init_messages():
     # メッセージ履歴を消すボタンを設置
     clear_button = st.sidebar.button("Clear Conversaton",key="clear")
+    
     # クリアボタンを押すか、メッセージが存在しない場合に初期化する処理
     # if clear_button or "message_history" not in st.session_state:
-    if clear_button:
+    if clear_button and gemini_api_key:
+        # GEMINIのAPIキーを登録
+        genai.configure(api_key=gemini_api_key)
+
         # システムプロンプト（初期プロンプト）を定義
         system_prompt = (
             "日本語で回答してください。"
