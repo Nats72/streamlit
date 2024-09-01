@@ -1,6 +1,8 @@
-import os
+# import os
 
 import streamlit as st
+
+from langchain_google_genai import ChatGoogleGenerativeAI
 import google.generativeai as genai
 import google.ai.generativelanguage as glm
 
@@ -42,9 +44,32 @@ def init_messages():
             {"role": "assistant", "content": "何か気になることはありますか？"}
             ]
 
+def select_model():
+    temperature = st.sidebar.slider(
+        "Temperature:", min_value=0.0, max_value=2.0, value=1.0, step=0.1
+    )
+    models = ("Gemini")
+    model = st.sidebar.radio("Choose a model:", models)
+    if model == "Gemini":
+        st.session_state.model_name = "gemini-1.5-flash"
+        return ChatGoogleGenerativeAI(
+            temperature=temperature,
+            model=st.session_state.model_name
+        )
+    
+def init_chain():
+    st.session_state.llm = select_model()
+    prompt = ChatPromptTemplate.from_messages([
+        *st.session_state.message_history,
+        "role": "user", "content": "{user_input}"
+    ])
+    output_parser = StrOutputParser()
+    return prompt | st.session_state.llm | output_parser
+
 def main():
     init_page()
     init_messages()
+    chain = init_chain()
 
     st.title("Gemini Chatbot!")
     st.caption("サイドバーにAPIキーを入れてから、下の入力欄にテキストを入力して使ってください。")
@@ -69,7 +94,7 @@ def main():
             st.markdown(message["content"])
         
     # ユーザーの入力が送信された際に実行される処理
-    # chat_input()は、チャットUIでユーザの入力を待ち受けする
+    # chat_input()で、チャットUIでユーザの入力を待ち受けする
     if user_input := st.chat_input("ここにメッセージを入力してください。"):
     
         # APIキーのチェック
@@ -113,8 +138,8 @@ def main():
             )
     
         # ユーザの入力をチャット履歴に追加し画面表示
-        st.session_state.message_history.append({"role": "user", "content": user_input})
-        st.chat_message("user").write(user_input)
+        # st.session_state.message_history.append({"role": "user", "content": user_input})
+        # st.chat_message("user").write(user_input)
 
         # これまでの会話履歴を取得
         messages = []
@@ -127,12 +152,17 @@ def main():
             )
     
         # Geminiへ問い合わせを行う
-        with st.spinner("Gemini is typing..."):
-            response = model.generate_content(messages)
+        # with st.spinner("Gemini is typing..."):
+        #     response = model.generate_content(messages)
+        with st.chat_message('ai'):
+            response = st.write_stream(chain.stream({"user_input":user_input}))
     
+        st.session_state.message_history.append({"role": "user", "content": user_input})
+        st.session_state.message_history.append({"role": "ai", "content": response})
+
         # Geminiの返答をチャット履歴に追加し画面表示
-        st.session_state.message_history.append({"role": "assistant", "content": response.text})
-        st.chat_message("assistant").write(response.text)
+        # st.session_state.message_history.append({"role": "assistant", "content": response.text})
+        # st.chat_message("assistant").write(response.text)
 
 if __name__ == '__main__':
     main()
