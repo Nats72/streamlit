@@ -4,17 +4,11 @@ import streamlit as st
 import google.generativeai as genai
 import google.ai.generativelanguage as glm
 
-def main():
-    # ================================================================================
-    # Google Gemini 1.5 Flashを利用するための設定
-    # ================================================================================
+
+def init_page():
     # # APIキーの設定
     # genai.configure(api_key=os.getenv("GoogleAPIKEY"))
 
-    # ================================================================================
-    # ページ設定
-    # https://docs.streamlit.io/develop/api-reference/configuration/st.set_page_config
-    # ================================================================================
     # ページ設定
     st.set_page_config(
         page_title="Gemini Chatbot",
@@ -23,20 +17,17 @@ def main():
         initial_sidebar_state="auto",
         menu_items=None
         )
-
-    # ================================================================================
-    # Body
-    # ================================================================================
+    
+    # サイドバーの設定
+    st.sidebar.title("option")
     # サイドバーにGeminiのAPIキーの入力欄を設ける
     with st.sidebar:
         gemini_api_key = st.text_input("Gemini API Key", key="chatbot_api_key", type="password")
         "[Get an Gemini API key](https://aistudio.google.com/app/apikey)"
     
-    st.title("Gemini Chatbot!")
-    st.caption("サイドバーにAPIキーを入れてから、下の入力欄にテキストを入力して使ってください。")
-    
-    # セッションにチャット履歴がなければ初期化（message_historyを作成）
-    if "message_history" not in st.session_state:
+def init_messages():
+    clear_button = st.sidebar.button("Clear Conversaton",key="clear")
+    if clear_button or "message_history" not in st.session_state:
         system_prompt = (
             "Your purpose is to answer questions about specific documents only. "
             "Please answer the user's questions based on what you know about the document. "
@@ -48,6 +39,27 @@ def main():
             {"role": "system", "content": system_prompt},
             {"role": "assistant", "content": "何か気になることはありますか？"}
             ]
+
+def main():
+    init_page()
+    init_messages()
+
+    st.title("Gemini Chatbot!")
+    st.caption("サイドバーにAPIキーを入れてから、下の入力欄にテキストを入力して使ってください。")
+    
+    # # セッションにチャット履歴がなければ初期化（message_historyを作成）
+    # if "message_history" not in st.session_state:
+    #     system_prompt = (
+    #         "Your purpose is to answer questions about specific documents only. "
+    #         "Please answer the user's questions based on what you know about the document. "
+    #         "If the question is outside scope of the document, please politely decline. "
+    #         "If you don't know the answer, say `I don't know`. "
+    #     )
+    #     st.session_state.message_history = [
+    #         # system promptを設定
+    #         {"role": "system", "content": system_prompt},
+    #         {"role": "assistant", "content": "何か気になることはありますか？"}
+    #         ]
     
     # チャット履歴を表示
     for message in st.session_state.message_history:
