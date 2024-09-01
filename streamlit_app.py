@@ -3,6 +3,9 @@
 import streamlit as st
 
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
 import google.generativeai as genai
 import google.ai.generativelanguage as glm
 
@@ -23,14 +26,16 @@ def init_page():
         )
     
     # Sidebar Settings
-    st.sidebar.title("option")
+    st.sidebar.title("Options")
     # サイドバーにGeminiのAPIキーの入力欄を設ける
     with st.sidebar:
         gemini_api_key = st.text_input("Gemini API Key", key="chatbot_api_key", type="password")
         "[Get an Gemini API key](https://aistudio.google.com/app/apikey)"
     
 def init_messages():
+    # メッセージ履歴を消すボタンを設置
     clear_button = st.sidebar.button("Clear Conversaton",key="clear")
+    # クリアボタンを押すか、メッセージが存在しない場合に初期化する処理
     if clear_button or "message_history" not in st.session_state:
         system_prompt = (
             "Your purpose is to answer questions about specific documents only. "
@@ -45,9 +50,12 @@ def init_messages():
             ]
 
 def select_model():
+    # tempratureを変更できるスライダーを設置
     temperature = st.sidebar.slider(
         "Temperature:", min_value=0.0, max_value=2.0, value=1.0, step=0.1
     )
+
+    # モデル選択できるラジオボタンを設置
     models = ("Gemini")
     model = st.sidebar.radio("Choose a model:", models)
     if model == "Gemini":
@@ -59,9 +67,10 @@ def select_model():
     
 def init_chain():
     st.session_state.llm = select_model()
+    # ユーザーの入力をモデルに渡すためのテンプレートを定義
     prompt = ChatPromptTemplate.from_messages([
         *st.session_state.message_history,
-        "role": "user", "content": "{user_input}"
+        ("user", "{user_input}"),
     ])
     output_parser = StrOutputParser()
     return prompt | st.session_state.llm | output_parser
@@ -155,6 +164,7 @@ def main():
         # with st.spinner("Gemini is typing..."):
         #     response = model.generate_content(messages)
         with st.chat_message('ai'):
+            # LCELのstreaming関数(chain.stream)をstreamlitのst.write_streamで表示させている
             response = st.write_stream(chain.stream({"user_input":user_input}))
     
         st.session_state.message_history.append({"role": "user", "content": user_input})
