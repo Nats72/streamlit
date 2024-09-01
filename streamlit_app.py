@@ -5,6 +5,7 @@ import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import ConfigurableField
 
 import google.generativeai as genai
 import google.ai.generativelanguage as glm
@@ -60,10 +61,16 @@ def select_model():
     model = st.sidebar.radio("Choose a model:", models)
     if model == "Gemini":
         st.session_state.model_name = "gemini-1.5-flash"
-        return ChatGoogleGenerativeAI(
+        # モデル生成
+        configurable_model = ChatGoogleGenerativeAI(
             temperature=temperature,
             model=st.session_state.model_name
         )
+        configurable_model.configurable_fields(
+            model_name=ConfigurableField(id="model"),
+            default_key="gemini-1.5-flash"
+        )
+        return configurable_model
     
 def init_chain():
     st.session_state.llm = select_model()
@@ -72,6 +79,7 @@ def init_chain():
         *st.session_state.message_history,
         ("user", "{user_input}"),
     ])
+    # モデルからの返答から必要な情報を抽出
     output_parser = StrOutputParser()
     return prompt | st.session_state.llm | output_parser
 
