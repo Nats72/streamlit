@@ -11,8 +11,8 @@ import google.generativeai as genai
 
 
 def init_page():
-    # # APIキーの設定
-    # genai.configure(api_key=os.getenv("GoogleAPIKEY"))
+    # APIキーの設定
+    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
     # Page Settings
     st.set_page_config(
@@ -70,7 +70,7 @@ def select_model():
         return configurable_model
     
 def init_chain():
-    llm = select_model()
+    st.session_state.llm = select_model()
     # ユーザーの入力をモデルに渡すためのテンプレートを定義
     prompt = ChatPromptTemplate.from_messages([
         *st.session_state.message_history,
@@ -78,7 +78,7 @@ def init_chain():
     ])
     # モデルからの返答から必要な情報を抽出
     output_parser = StrOutputParser()
-    return prompt | llm | output_parser
+    return prompt | st.session_state.llm | output_parser
 
 def main():
     init_page()
