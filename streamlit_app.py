@@ -1,5 +1,3 @@
-import os
-
 import streamlit as st
 
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -10,8 +8,6 @@ import google.generativeai as genai
 
 
 def init_page():
-    # # APIキーの設定
-    # genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
     # Page Settings
     st.set_page_config(
@@ -29,10 +25,15 @@ def init_messages():
     gemini_api_key = st.sidebar.text_input("Gemini API Key", key="chatbot_api_key", type="password")
 
     # メッセージ履歴を消すボタンを設置
-    clear_button = st.sidebar.button("Clear Conversaton",key="clear")
+    clear_button = st.sidebar.button("Start/Reset",key="clear")
     
-    # クリアボタンを押すか、メッセージが存在しない場合に初期化する処理
-    # if clear_button or "message_history" not in st.session_state:
+    # 初期状態の表示をする
+    if "message_history" not in st.session_state:
+        st.session_state.message_history = [
+            {"role": "assistant", "content": "サイドバーにAPIキーを入れてから、Start/Resetボタンで開始します。"}
+            ]
+        
+    # クリアボタンを押すと初期化
     if clear_button and gemini_api_key:
         # GEMINIのAPIキーを登録
         genai.configure(api_key=gemini_api_key)
@@ -86,7 +87,7 @@ def main():
 
     # タイトルとキャプション
     st.title("Gemini Chatbot!")
-    st.caption("サイドバーにAPIキーを入れてから、下の入力欄にテキストを入力して使ってください。")
+    st.caption("サイドバーにAPIキーを入れてから、Start/Resetボタンで開始します。")
     
     # チャット履歴を表示
     for message in st.session_state.message_history:
