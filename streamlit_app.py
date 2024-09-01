@@ -35,16 +35,15 @@ def init_messages():
     clear_button = st.sidebar.button("Clear Conversaton",key="clear")
     # クリアボタンを押すか、メッセージが存在しない場合に初期化する処理
     if clear_button or "message_history" not in st.session_state:
+        # システムプロンプト（初期プロンプト）を定義
         system_prompt = (
-            "Your purpose is to answer questions about specific documents only. "
-            "Please answer the user's questions based on what you know about the document. "
-            "If the question is outside scope of the document, please politely decline. "
-            "If you don't know the answer, say `I don't know`. "
+            "日本語で回答してください。"
+            "質問の答えが分からない場合は、分からない旨を回答してください。"
         )
+        # プロンプトを設定
         st.session_state.message_history = [
-            # system promptを設定
             {"role": "system", "content": system_prompt},
-            {"role": "assistant", "content": "何か気になることはありますか？"}
+            {"role": "assistant", "content": "上記プロンプトを設定しました。気軽に質問してください。"}
             ]
 
 def select_model():
