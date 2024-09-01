@@ -8,10 +8,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import ConfigurableField
 
 import google.generativeai as genai
-import google.ai.generativelanguage as glm
 
-# Global variable
-gemini_api_key = ""
 
 def init_page():
     # # APIキーの設定
@@ -73,7 +70,7 @@ def select_model():
         return configurable_model
     
 def init_chain():
-    st.session_state.llm = select_model()
+    llm = select_model()
     # ユーザーの入力をモデルに渡すためのテンプレートを定義
     prompt = ChatPromptTemplate.from_messages([
         *st.session_state.message_history,
@@ -81,7 +78,7 @@ def init_chain():
     ])
     # モデルからの返答から必要な情報を抽出
     output_parser = StrOutputParser()
-    return prompt | st.session_state.llm | output_parser
+    return prompt | llm | output_parser
 
 def main():
     init_page()
@@ -171,10 +168,13 @@ def main():
         # Geminiへ問い合わせを行う
         # with st.spinner("Gemini is typing..."):
         #     response = model.generate_content(messages)
+        
+        # LLMの返答をStream表示させる
         with st.chat_message('ai'):
             # LCELのstreaming関数(chain.stream)をstreamlitのst.write_streamで表示させている
             response = st.write_stream(chain.stream({"user_input":user_input}))
     
+        # チャット履歴に追加する
         st.session_state.message_history.append({"role": "user", "content": user_input})
         st.session_state.message_history.append({"role": "ai", "content": response})
 
