@@ -63,10 +63,10 @@ def select_model():
             temperature=temperature,
             model=st.session_state.model_name
         )
-        configurable_model.configurable_fields(
-            model_name=ConfigurableField(id="model"),
-            default_key="gemini-1.5-flash"
-        )
+        # configurable_model.configurable_fields(
+        #     model_name=ConfigurableField(id="model"),
+        #     default_key="gemini-1.5-flash"
+        # )
         return configurable_model
     
 def init_chain():
